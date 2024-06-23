@@ -1,6 +1,10 @@
 package io.getint.recruitment_task;
 
+
+import io.getint.recruitment_task.model.Issue;
+
 import java.io.IOException;
+import java.util.List;
 
 public class JiraSynchronizer {
     /**
@@ -12,6 +16,15 @@ public class JiraSynchronizer {
      * - priority
      * Bonus points for syncing comments.
      */
-    public void moveTasksToOtherProject() throws Exception {
+
+    private final JiraService jiraService;
+
+    public JiraSynchronizer(JiraService jiraService) {
+        this.jiraService = jiraService;
+    }
+
+    public void moveTasksToOtherProject(String sourceProjectKey, String targetProjectKey, int maxResults) throws IOException {
+        List<Issue> sourceIssues= jiraService.getIssuesFromProject(sourceProjectKey, maxResults);
+        String response = jiraService.postIssueToDestProject(targetProjectKey, sourceIssues);
     }
 }
