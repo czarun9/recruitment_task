@@ -2,6 +2,7 @@ package io.getint.recruitment_task.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,13 +12,14 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Fields {
 
     private String summary;
     private String description;
     @JsonProperty("issuetype")
     private IssueType issueType;
-//    private Comment comment;
+    private Comment comment;
     private Priority priority;
     private Project project;
 

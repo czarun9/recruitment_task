@@ -73,6 +73,34 @@ public class JiraHttpClient {
                 throw new RuntimeException("Failed : HTTP error code : " + statusCode);
             }
             System.out.println("Issues added");
+
+            return EntityUtils.toString(response.getEntity());
+        } catch (URISyntaxException | IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String addCommentToIssue(String jsonPayload, String issueId){
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+
+            URI uri = new URIBuilder(jiraBaseUrl)
+                    .setPath("rest/api/2/issue/" +  issueId + "/comment")
+                    .build();
+            HttpPost httpPost = new HttpPost(uri);
+
+            httpPost.setHeader("Content-Type", "application/json");
+            httpPost.setHeader("Authorization", authHeader);
+            StringEntity entity = new StringEntity(jsonPayload, StandardCharsets.UTF_8);
+            httpPost.setEntity(entity);
+
+            HttpResponse response = httpClient.execute(httpPost);
+
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode != 201) {
+                throw new RuntimeException("Failed : HTTP error code : " + statusCode);
+            }
+            System.out.println("Comments added");
+
             return EntityUtils.toString(response.getEntity());
         } catch (URISyntaxException | IOException e) {
             throw new RuntimeException(e);

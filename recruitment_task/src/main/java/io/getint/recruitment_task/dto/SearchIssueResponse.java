@@ -13,7 +13,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SearchIssueDto {
+public class SearchIssueResponse {
     @JsonProperty("issues")
     private List<Issue> issues;
 }
