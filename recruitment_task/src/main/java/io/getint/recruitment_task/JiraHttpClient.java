@@ -46,7 +46,6 @@ public class JiraHttpClient {
             if (statusCode != 200) {
                 throw new RuntimeException("Failed : HTTP error code : " + statusCode);
             }
-            System.out.println("Found issues");
             return EntityUtils.toString(response.getEntity());
         } catch (URISyntaxException | IOException e) {
             throw new RuntimeException(e);
@@ -72,7 +71,6 @@ public class JiraHttpClient {
             if (statusCode != 201) {
                 throw new RuntimeException("Failed : HTTP error code : " + statusCode);
             }
-            System.out.println("Issues added");
 
             return EntityUtils.toString(response.getEntity());
         } catch (URISyntaxException | IOException e) {
@@ -80,7 +78,7 @@ public class JiraHttpClient {
         }
     }
 
-    public String addCommentToIssue(String jsonPayload, int issueId) {
+    public void addCommentToIssue(String jsonPayload, int issueId) {
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
 
             URI uri = new URIBuilder(jiraBaseUrl)
@@ -99,9 +97,6 @@ public class JiraHttpClient {
             if (statusCode != 201) {
                 throw new RuntimeException("Failed : HTTP error code : " + statusCode);
             }
-            System.out.println("Comments added");
-
-            return EntityUtils.toString(response.getEntity());
         } catch (URISyntaxException | IOException e) {
             throw new RuntimeException(e);
         }
