@@ -2,8 +2,10 @@ package io.getint.recruitment_task;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import io.getint.recruitment_task.dto.*;
 import io.getint.recruitment_task.model.Issue;
+import io.getint.recruitment_task.model.Transition;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -47,17 +49,37 @@ public class JiraService {
             Issue issue = issues.get(i);
 
             addComments(issue, addedIssueId);
-//            transitIssue(issue, issueId);
+            transitIssue(issue, addedIssueId);
 
         }
     }
 
-    private void addComments(Issue issue, int issueId) throws JsonProcessingException {
-        List<String> comments = issue.getFields().getComment().getComments();
+    private void addComments(Issue sourceIssue, int destIssueId) throws JsonProcessingException {
+        List<String> comments = sourceIssue.getFields().getComment().getComments();
         for (String comment : comments) {
             String commentPayload = objectMapper.writeValueAsString(new PostCommentRequestDto(comment));
-            jiraHttpClient.addCommentToIssue(commentPayload, issueId);
+            jiraHttpClient.addCommentToIssue(commentPayload, destIssueId);
         }
+    }
+
+    private void transitIssue(Issue sourceIssue, int destIssueId) throws JsonProcessingException {
+        int statusId = sourceIssue.getFields().getStatus().getStatusCategoryId();
+
+        String response = jiraHttpClient.getTransitions(destIssueId);
+        TransitionsResponse transitionsResponse = objectMapper.readValue(response, TransitionsResponse.class);
+        Transition transition = transitionsResponse.getTransitions().stream()
+                .filter(t -> t.getStatus().getStatusCategoryId() == statusId)
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("No matching transition"));
+
+
+        objectMapper.enable(SerializationFeature.WRAP_ROOT_VALUE);
+        String transitionPayload = objectMapper.writeValueAsString(new TransitionDto(transition.getId()));
+        objectMapper.disable(SerializationFeature.WRAP_ROOT_VALUE);
+
+        jiraHttpClient.transitIssue(transitionPayload, destIssueId);
+//        System.out.println("Issue " + "was transited to status: " +);
+
     }
 
     private List<CreateIssueDto> convertIssuesToDTOs(String projectKey, List<Issue> issues) {

@@ -107,7 +107,7 @@ public class JiraHttpClient {
         }
     }
 
-    public String getTransitions(String issueId) {
+    public String getTransitions(int issueId) {
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
 
             URI uri = new URIBuilder(jiraBaseUrl)
@@ -130,7 +130,7 @@ public class JiraHttpClient {
         }
     }
 
-    public String transitIssue(String transitionPayload, String issueId) {
+    public void transitIssue(String transitionPayload, int issueId) {
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
 
             URI uri = new URIBuilder(jiraBaseUrl)
@@ -149,9 +149,7 @@ public class JiraHttpClient {
             if (statusCode != 204) {
                 throw new RuntimeException("Failed : HTTP error code : " + statusCode);
             }
-            System.out.println("Transition's done");
 
-            return EntityUtils.toString(response.getEntity());
         } catch (URISyntaxException | IOException e) {
             throw new RuntimeException(e);
         }
