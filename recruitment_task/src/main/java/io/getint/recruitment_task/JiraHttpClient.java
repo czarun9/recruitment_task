@@ -32,7 +32,7 @@ public class JiraHttpClient {
             URI uri = new URIBuilder(jiraBaseUrl)
                     .setPath("/rest/api/2/search")
                     .addParameter("jql", "project=" + sourceProjectKey)
-                    .addParameter("fields", "summary,description,priority,comment,issuetype")
+                    .addParameter("fields", "summary,description,priority,comment,issuetype,status")
                     .addParameter("maxResults", Integer.toString(maxResults))
                     .build();
             HttpGet httpGet = new HttpGet(uri);
@@ -80,11 +80,11 @@ public class JiraHttpClient {
         }
     }
 
-    public String addCommentToIssue(String jsonPayload, String issueId){
+    public String addCommentToIssue(String jsonPayload, String issueId) {
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
 
             URI uri = new URIBuilder(jiraBaseUrl)
-                    .setPath("rest/api/2/issue/" +  issueId + "/comment")
+                    .setPath("rest/api/2/issue/" + issueId + "/comment")
                     .build();
             HttpPost httpPost = new HttpPost(uri);
 
@@ -100,6 +100,56 @@ public class JiraHttpClient {
                 throw new RuntimeException("Failed : HTTP error code : " + statusCode);
             }
             System.out.println("Comments added");
+
+            return EntityUtils.toString(response.getEntity());
+        } catch (URISyntaxException | IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String getTransitions(String issueId) {
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+
+            URI uri = new URIBuilder(jiraBaseUrl)
+                    .setPath("rest/api/2/issue/" + issueId + "/transitions")
+                    .build();
+            HttpGet httpGet = new HttpGet(uri);
+
+            httpGet.setHeader("Content-Type", "application/json");
+            httpGet.setHeader("Authorization", authHeader);
+
+            HttpResponse response = httpClient.execute(httpGet);
+
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode != 200) {
+                throw new RuntimeException("Failed : HTTP error code : " + statusCode);
+            }
+            return EntityUtils.toString(response.getEntity());
+        } catch (URISyntaxException | IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String transitIssue(String transitionPayload, String issueId) {
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+
+            URI uri = new URIBuilder(jiraBaseUrl)
+                    .setPath("rest/api/2/issue/" + issueId + "/transitions")
+                    .build();
+            HttpPost httpPost = new HttpPost(uri);
+
+            httpPost.setHeader("Content-Type", "application/json");
+            httpPost.setHeader("Authorization", authHeader);
+            StringEntity entity = new StringEntity(transitionPayload, StandardCharsets.UTF_8);
+            httpPost.setEntity(entity);
+
+            HttpResponse response = httpClient.execute(httpPost);
+
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode != 204) {
+                throw new RuntimeException("Failed : HTTP error code : " + statusCode);
+            }
+            System.out.println("Transition's done");
 
             return EntityUtils.toString(response.getEntity());
         } catch (URISyntaxException | IOException e) {

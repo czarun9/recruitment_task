@@ -22,6 +22,7 @@ public class Fields {
     private Comment comment;
     private Priority priority;
     private Project project;
+    private Status status;
 
     public Fields(String projectKey, Issue issue) {
         this.project = new Project(projectKey);
@@ -35,10 +36,12 @@ public class Fields {
     public Fields(@JsonProperty("summary") String summary,
                   @JsonProperty("description") String description,
                   @JsonProperty("issuetype") IssueType issueType,
-                  @JsonProperty("priority") Priority priority) {
+                  @JsonProperty("priority") Priority priority,
+                  @JsonProperty("status") Status status) {
         this.summary = summary;
         this.description = description;
         this.issueType = issueType;
         this.priority = priority;
+        this.status = status;
     }
 }

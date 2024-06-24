@@ -14,5 +14,5 @@ import lombok.Setter;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PostCommentRequestDto {
     @JsonProperty("body")
-    String body;
+    private String body;
 }

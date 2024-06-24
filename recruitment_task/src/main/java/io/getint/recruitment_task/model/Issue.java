@@ -12,7 +12,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Issue {
-    public String id;
-    public String key;
-    public Fields fields;
+    private String id;
+    private String key;
+    private Fields fields;
 }

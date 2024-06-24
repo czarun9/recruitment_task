@@ -14,7 +14,7 @@ import lombok.Setter;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Priority {
     @JsonProperty("id")
-    public String id;
+    private String id;
 }
 
 

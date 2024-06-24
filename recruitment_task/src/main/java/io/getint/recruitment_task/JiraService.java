@@ -26,26 +26,38 @@ public class JiraService {
         return searchIssueDto.getIssues();
     }
 
-    public String postIssueToDestProjectWithComments(String projectKey, List<Issue> issues) throws JsonProcessingException, UnsupportedEncodingException {
+    public String addIssuesToDestProjectWithComments(String projectKey, List<Issue> issues) throws JsonProcessingException, UnsupportedEncodingException {
+        PostIssuesResponse postIssuesResponse = addIssuesToProject(projectKey, issues);
+        postprocessAddedIssues(issues, postIssuesResponse);
+
+        return "";
+    }
+
+    private PostIssuesResponse addIssuesToProject(String projectKey, List<Issue> issues) throws JsonProcessingException {
         List<CreateIssueDto> issueDtos = convertIssuesToDTOs(projectKey, issues);
         String jsonIssues = objectMapper.writeValueAsString(new BulkCreateIssueDto(issueDtos));
         String postResponse = jiraHttpClient.postIssues(jsonIssues);
 
-        PostIssuesResponse postIssuesResponse = objectMapper.readValue(postResponse, PostIssuesResponse.class);
+        return objectMapper.readValue(postResponse, PostIssuesResponse.class);
+    }
 
+    private void postprocessAddedIssues(List<Issue> issues, PostIssuesResponse postIssuesResponse) throws JsonProcessingException {
         for (int i = 0; i < postIssuesResponse.getIssues().size(); i++) {
             String issueId = postIssuesResponse.getIssues().get(i).getId();
             Issue issue = issues.get(i);
-            List<String> comments = issue.getFields().getComment().getComments();
 
-            for (String comment : comments) {
-                String commentPayload = objectMapper.writeValueAsString(new PostCommentRequestDto(comment));
-                jiraHttpClient.addCommentToIssue(commentPayload, issueId);
-            }
-//            System.out.println("Comment: "+ commentBody + "\nadded to issue: " + issueId);
+            addComments(issue, issueId);
+//            transitIssue(issue, issueId);
+
         }
+    }
 
-        return "";
+    private void addComments(Issue issue, String issueId) throws JsonProcessingException {
+        List<String> comments = issue.getFields().getComment().getComments();
+        for (String comment : comments) {
+            String commentPayload = objectMapper.writeValueAsString(new PostCommentRequestDto(comment));
+            jiraHttpClient.addCommentToIssue(commentPayload, issueId);
+        }
     }
 
     private List<CreateIssueDto> convertIssuesToDTOs(String projectKey, List<Issue> issues) {

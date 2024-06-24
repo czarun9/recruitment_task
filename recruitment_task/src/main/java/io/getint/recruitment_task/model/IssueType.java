@@ -12,5 +12,5 @@ import lombok.Setter;
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class IssueType {
-    public String name;
+    private String name;
 }

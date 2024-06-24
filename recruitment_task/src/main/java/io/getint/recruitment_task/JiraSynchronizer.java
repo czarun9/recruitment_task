@@ -25,6 +25,6 @@ public class JiraSynchronizer {
 
     public void moveTasksToOtherProject(String sourceProjectKey, String targetProjectKey, int maxResults) throws IOException {
         List<Issue> sourceIssues= jiraService.getIssuesFromProject(sourceProjectKey, maxResults);
-        String response = jiraService.postIssueToDestProjectWithComments(targetProjectKey, sourceIssues);
+        String response = jiraService.addIssuesToDestProjectWithComments(targetProjectKey, sourceIssues);
     }
 }
