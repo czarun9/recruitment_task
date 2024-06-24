@@ -31,11 +31,9 @@ public class JiraService {
         return searchIssueDto.getIssues();
     }
 
-    public String addIssuesToDestProjectWithComments(String projectKey, List<Issue> issues) throws JsonProcessingException, UnsupportedEncodingException {
+    public void addIssuesToDestProjectWithComments(String projectKey, List<Issue> issues) throws JsonProcessingException, UnsupportedEncodingException {
         PostIssuesResponse postIssuesResponse = addIssuesToProject(projectKey, issues);
         postprocessAddedIssues(issues, postIssuesResponse);
-
-        return "";
     }
 
     private PostIssuesResponse addIssuesToProject(String projectKey, List<Issue> issues) throws JsonProcessingException {

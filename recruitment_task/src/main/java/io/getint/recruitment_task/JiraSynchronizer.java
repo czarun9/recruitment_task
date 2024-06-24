@@ -2,10 +2,12 @@ package io.getint.recruitment_task;
 
 
 import io.getint.recruitment_task.model.Issue;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.List;
 
+@Slf4j
 public class JiraSynchronizer {
     /**
      * Search for 5 tickets in one project, and move them
@@ -24,7 +26,11 @@ public class JiraSynchronizer {
     }
 
     public void moveTasksToOtherProject(String sourceProjectKey, String targetProjectKey, int maxResults) throws IOException {
-        List<Issue> sourceIssues= jiraService.getIssuesFromProject(sourceProjectKey, maxResults);
-        String response = jiraService.addIssuesToDestProjectWithComments(targetProjectKey, sourceIssues);
+        log.info("Moving" + maxResults + " tickets from " + sourceProjectKey + " to " + targetProjectKey);
+
+        List<Issue> sourceIssues = jiraService.getIssuesFromProject(sourceProjectKey, maxResults);
+        jiraService.addIssuesToDestProjectWithComments(targetProjectKey, sourceIssues);
+
+        log.info("Moving tickets completed successfully");
     }
 }
