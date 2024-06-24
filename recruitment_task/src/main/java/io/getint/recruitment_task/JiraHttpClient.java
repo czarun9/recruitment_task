@@ -80,7 +80,7 @@ public class JiraHttpClient {
         }
     }
 
-    public String addCommentToIssue(String jsonPayload, String issueId) {
+    public String addCommentToIssue(String jsonPayload, int issueId) {
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
 
             URI uri = new URIBuilder(jiraBaseUrl)

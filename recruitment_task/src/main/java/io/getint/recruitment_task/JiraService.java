@@ -41,18 +41,18 @@ public class JiraService {
         return objectMapper.readValue(postResponse, PostIssuesResponse.class);
     }
 
-    private void postprocessAddedIssues(List<Issue> issues, PostIssuesResponse postIssuesResponse) throws JsonProcessingException {
-        for (int i = 0; i < postIssuesResponse.getIssues().size(); i++) {
-            String issueId = postIssuesResponse.getIssues().get(i).getId();
+    private void postprocessAddedIssues(List<Issue> issues, PostIssuesResponse addIssuesResponse) throws JsonProcessingException {
+        for (int i = 0; i < addIssuesResponse.getIssues().size(); i++) {
+            int addedIssueId = addIssuesResponse.getIssues().get(i).getId();
             Issue issue = issues.get(i);
 
-            addComments(issue, issueId);
+            addComments(issue, addedIssueId);
 //            transitIssue(issue, issueId);
 
         }
     }
 
-    private void addComments(Issue issue, String issueId) throws JsonProcessingException {
+    private void addComments(Issue issue, int issueId) throws JsonProcessingException {
         List<String> comments = issue.getFields().getComment().getComments();
         for (String comment : comments) {
             String commentPayload = objectMapper.writeValueAsString(new PostCommentRequestDto(comment));
